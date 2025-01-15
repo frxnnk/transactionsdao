@@ -6,13 +6,13 @@ export default async function handler(req, res) {
 
     try {
         // Configurar chromium
-        await chromium.font('/var/task/fonts/');
+        const executablePath = await chromium.executablePath;
         
         // Iniciar el navegador
         browser = await playwright.chromium.launch({
             args: chromium.args,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless,
+            executablePath: executablePath,
+            headless: true,
         });
         
         const context = await browser.newContext({
