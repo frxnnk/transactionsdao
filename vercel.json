@@ -2,8 +2,8 @@
   "version": 2,
   "functions": {
     "api/transactions.js": {
-      "memory": 3008,
-      "maxDuration": 30
+      "memory": 1024,
+      "maxDuration": 10
     }
   }
 } 
