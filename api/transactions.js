@@ -1,58 +1,27 @@
-const playwright = require('playwright-aws-lambda');
+const chromium = require('@sparticuz/chromium');
+const playwright = require('playwright-core');
 
 export default async function handler(req, res) {
     let browser = null;
 
     try {
-        browser = await playwright.launchChromium({
-            headless: true,
-            chromiumSandbox: false,
-            args: [
-                '--autoplay-policy=user-gesture-required',
-                '--disable-background-networking',
-                '--disable-background-timer-throttling',
-                '--disable-backgrounding-occluded-windows',
-                '--disable-breakpad',
-                '--disable-client-side-phishing-detection',
-                '--disable-component-update',
-                '--disable-default-apps',
-                '--disable-dev-shm-usage',
-                '--disable-domain-reliability',
-                '--disable-extensions',
-                '--disable-features=AudioServiceOutOfProcess',
-                '--disable-hang-monitor',
-                '--disable-ipc-flooding-protection',
-                '--disable-notifications',
-                '--disable-offer-store-unmasked-wallet-cards',
-                '--disable-popup-blocking',
-                '--disable-print-preview',
-                '--disable-prompt-on-repost',
-                '--disable-renderer-backgrounding',
-                '--disable-setuid-sandbox',
-                '--disable-speech-api',
-                '--disable-sync',
-                '--hide-scrollbars',
-                '--ignore-gpu-blacklist',
-                '--metrics-recording-only',
-                '--mute-audio',
-                '--no-default-browser-check',
-                '--no-first-run',
-                '--no-pings',
-                '--no-sandbox',
-                '--no-zygote',
-                '--single-process',
-                '--use-gl=swiftshader',
-            ]
+        // Configurar chromium
+        await chromium.font('/var/task/fonts/');
+        
+        // Iniciar el navegador
+        browser = await playwright.chromium.launch({
+            args: chromium.args,
+            executablePath: await chromium.executablePath,
+            headless: chromium.headless,
         });
         
         const context = await browser.newContext({
             viewport: { width: 1280, height: 720 },
-            javaScriptEnabled: true,
         });
         
         const page = await context.newPage();
         
-        // Bloquear recursos innecesarios para ahorrar memoria
+        // Bloquear recursos innecesarios
         await page.route('**/*.{png,jpg,jpeg,gif,css,font,woff,woff2}', route => route.abort());
         
         const daosUrl = `https://www.daos.fun/CvuZk1iAPQsWdTy777a4dY78ue8z6HsRbk8UZCXvMSmB`;
